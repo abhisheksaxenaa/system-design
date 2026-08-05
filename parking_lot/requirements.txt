@@ -4,4 +4,4 @@ sqlmodel
 pydantic
 pytest
 httpx
-
+locust

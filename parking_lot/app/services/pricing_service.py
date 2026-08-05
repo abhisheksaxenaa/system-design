@@ -18,7 +18,7 @@ class PricingService:
         if exit_time <= entry_time:
             return 0.0
         delta = exit_time - entry_time
-        hours = math.ceil(delta.total_seconds() / 3600)
+        hours = math.ceil(delta.total_seconds() / 60)
         fee = 0.0
         if hours >= 1:
             fee += self.FIRST_HOUR
