@@ -7,6 +7,11 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+- copy `.env.example` to `.env` and update the connection string for your environment
+```bash
+cp .env.example .env
+```
+
 - run via below command to start the application
 
 ```bash

@@ -1,4 +1,5 @@
 from typing import List, Optional
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 from app.models.models import Spot, Vehicle, Ticket, SpotType
 
@@ -9,8 +10,10 @@ class SpotRepository:
 
     def find_free_spot(self, spot_types: List[SpotType]) -> Optional[Spot]:
         stmt = select(Spot).where(Spot.is_free == True, Spot.spot_type.in_(spot_types)).order_by(Spot.id)
-        results = self.session.exec(stmt).all()
-        return results[0] if results else None
+        if self.session.get_bind().dialect.name == "postgresql":
+            stmt = stmt.with_for_update(skip_locked=True)
+        result = self.session.exec(stmt).first()
+        return result
 
     def save(self, obj):
         self.session.add(obj)
@@ -44,7 +47,11 @@ class VehicleRepository:
             return found
         v = Vehicle(license_plate=license_plate, vehicle_type=vehicle_type)
         self.session.add(v)
-        self.session.commit()
+        try:
+            self.session.commit()
+        except IntegrityError:
+            self.session.rollback()
+            return self.session.exec(stmt).one()
         self.session.refresh(v)
         return v
 
