@@ -2,7 +2,7 @@ from typing import Optional, List
 import enum
 from datetime import datetime
 from sqlmodel import SQLModel, Field, Relationship
-from sqlalchemy import Column
+from sqlalchemy import Column, String
 from sqlalchemy import Enum as SAEnum
 
 
@@ -30,7 +30,7 @@ class Spot(SQLModel, table=True):
 
 class Vehicle(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    license_plate: str = Field(index=True)
+    license_plate: str = Field(sa_column=Column(String, unique=True, index=True))
     vehicle_type: VehicleType = Field(sa_column=Column(SAEnum(VehicleType), nullable=False))
     tickets: List["Ticket"] = Relationship(back_populates="vehicle")
 

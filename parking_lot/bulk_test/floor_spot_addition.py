@@ -14,7 +14,7 @@ if str(ROOT) not in sys.path:
 class SpotType(str, enum.Enum):
     COMPACT = "compact"
     LARGE = "large"
-    HANDICAPPED = "handicapped"
+    # HANDICAPPED = "handicapped"
     MOTORCYCLE = "motorcycle"
     EV = "ev"
 

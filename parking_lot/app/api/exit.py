@@ -24,15 +24,18 @@ def scan_ticket(ticket_id: int, session: Session = Depends(get_session)):
     now = datetime.utcnow()
     pricing = PricingService()
     fee = pricing.compute_fee(ticket.entry_time, now)
-    return {"ticket_id": ticket.id, "entry_time": ticket.entry_time, "now": now, "estimated_fee": fee}
+    return {"ticket_id": ticket.id, "entry_time": ticket.entry_time, "now": now, "estimated_fee": fee, "is_paid": ticket.is_paid}
 
 
 @router.post("/ticket/{ticket_id}/pay")
 def pay_ticket(ticket_id: int, req: PaymentRequest, session: Session = Depends(get_session)):
     ticket_repo = TicketRepository(session)
     ticket = ticket_repo.get(ticket_id)
+    spot_repo = SpotRepository(session)
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
+    if ticket.is_paid:
+        raise HTTPException(status_code=409, detail="Ticket already paid")
     now = datetime.utcnow()
     pricing = PricingService()
     amount = pricing.compute_fee(ticket.entry_time, now)
@@ -44,19 +47,18 @@ def pay_ticket(ticket_id: int, req: PaymentRequest, session: Session = Depends(g
     ticket.paid_amount = amount
     ticket.exit_time = now
     ticket_repo.update(ticket)
-    return {"ticket_id": ticket.id, "paid": True, "amount": amount}
+    # free the spot
+    spot = spot_repo.free_spot(ticket.spot_id)
+    return {"ticket_id": ticket.id, "paid": True, "amount": amount, "spot_freed": spot.id if spot else None}
 
 
 @router.post("/exit/{ticket_id}")
 def exit_parking(ticket_id: int, session: Session = Depends(get_session)):
     ticket_repo = TicketRepository(session)
-    spot_repo = SpotRepository(session)
     ticket = ticket_repo.get(ticket_id)
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
     if not ticket.is_paid:
         raise HTTPException(status_code=403, detail="Ticket not paid")
-    # free the spot
-    spot = spot_repo.free_spot(ticket.spot_id)
     ticket_repo.update(ticket)
-    return {"ticket_id": ticket.id, "exited": True, "spot_freed": spot.id if spot else None}
+    return {"ticket_id": ticket.id, "exited": True}
