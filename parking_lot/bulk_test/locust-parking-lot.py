@@ -30,18 +30,21 @@ class ParkingLotUser(HttpUser):
         # Get ticket details first to compute fee and then pay
         # payment type can be card or cash, randomly selected
         # ticket_id range is assumed to be from 1 to 200 for testing purposes
-        ticket_id = (getattr(self.environment.runner.stats, "num_requests", 0) % 200) + 1
-        ticket_response = self.client.get(f"/ticket/{ticket_id}")
         # ticket_response.json() will have ticket_id, estimated_fee
         # use estimated fees to pay the ticket
+        ticket_id = (getattr(self.environment.runner.stats, "num_requests", 0) % 1000) + 1
+        ticket_response = self.client.get(f"/ticket/{ticket_id}")
         ticket_data = ticket_response.json()
         # If ticket is not found, skip payment and exit
         if "detail" in ticket_data and ticket_data["detail"] == "Ticket not found":
             return
         payment_type = ["card", "cash"][getattr(self.environment.runner.stats, "num_requests", 0) % 2]
-        self.client.post(f"/ticket/{ticket_id}/pay", json={
+        pay_ticket_response = self.client.post(f"/ticket/{ticket_id}/pay", json={
             "method": payment_type,
             "details": {"cash_received": ticket_data["estimated_fee"]}
         })
+        pay_ticket_data = pay_ticket_response.json()
+        if "detail" in pay_ticket_data and pay_ticket_data["detail"] == "Ticket already paid":
+            return
         # now exit the parking lot
         self.client.post(f"/exit/{ticket_id}")
