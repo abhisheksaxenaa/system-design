@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 import abc
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from app.models.item import Item
-from app.vending_machine import VendingMachine
+
+if TYPE_CHECKING:
+    from app.vending_machine import VendingMachine
 
 class VendingMachineException(Exception):
     pass
@@ -82,7 +86,7 @@ class DispensingState(VendingMachineState):
         if slot.is_empty():
             raise VendingMachineException(f"Item {machine.current_selected_code} is out of stock.")
         
-        dispensed_item = slot.dispense_item()
+        dispensed_item = slot.dispense()
         machine.current_balance -= dispensed_item.price
         print(f"Dispensed {dispensed_item.name}. Remaining balance: ${machine.current_balance}.")
         
