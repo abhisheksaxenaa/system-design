@@ -1,0 +1,8 @@
+/data
+
+.venv
+.env
+.vscode
+.env
+
+parking.db
