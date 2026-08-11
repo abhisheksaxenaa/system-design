@@ -33,8 +33,15 @@ def main():
     for file in result:
         print(file)
 
+    # Testing the NameFilter
+    no_image_name = NameFilter(name="image")
+    result = FileSearchEngine.search(files, no_image_name)
+    print(f"\nFiles with 'image' in the name: {len(result)}")
+    for file in result:
+        print(file)
+
     # Testing combined filters using logical operators
-    combined_filter = (extension_filter & size_filter | name_filter)
+    combined_filter = (extension_filter & size_filter & ~no_image_name | name_filter)
     result = FileSearchEngine.search(files, combined_filter)
     print(f"\nFiles matching combined filter: {len(result)}")
     for file in result:
