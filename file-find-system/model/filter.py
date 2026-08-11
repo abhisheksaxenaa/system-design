@@ -9,15 +9,34 @@ class Filter(ABC):
         pass
 
     # Operator overloading for intuitive filter composition
-    # def __and__(self, other: "Filter") -> "Filter":
-    #     return AndFilter(self, other)
+    def __and__(self, other: "Filter") -> "Filter":
+        return AndFilter(self, other)
 
-    # def __or__(self, other: "Filter") -> "Filter":
-    #     return OrFilter(self, other)
+    def __or__(self, other: "Filter") -> "Filter":
+        return OrFilter(self, other)
 
-    # def __invert__(self) -> "Filter":
-    #     return NotFilter(self)
+    def __invert__(self) -> "Filter":
+        return NotFilter(self)
 
+class AndFilter(Filter):
+    def __init__(self, *filters: Filter):
+        self.filters = filters
+    def apply(self, file: File) -> bool:
+        return all(f.apply(file) for f in self.filters)
+
+class OrFilter(Filter):
+    def __init__(self, *filters: Filter):
+        self.filters = filters
+
+    def apply(self, file: File) -> bool:
+        return any(f.apply(file) for f in self.filters)
+
+class NotFilter(Filter):
+    def __init__(self, filter: Filter):
+        self.filter = filter
+
+    def apply(self, file: File) -> bool:
+        return not self.filter.apply(file)
 
 class ExtensionFilter(Filter):
     def __init__(self, extension: str):
