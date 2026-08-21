@@ -1,7 +1,5 @@
 from fastapi import APIRouter
-# Define your API routers here
+from app.api.game_router import router as game_router
 
 router = APIRouter()
-# router.include_router(entry_router)
-# router.include_router(admin_router, prefix="/admin")
-# router.include_router(exit_router)
+router.include_router(game_router)
