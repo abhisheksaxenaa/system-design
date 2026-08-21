@@ -1,10 +1,7 @@
 from fastapi import FastAPI
-from sqlmodel import SQLModel
-from app.boundary.db import engine, get_session
+from app.boundary.db import engine
 from app.api import router as api_router
-from app.services.game_service import GameService
-from app.repos.winning_strategy import Standard3x3WinningStrategy
-from app.models.models import Symbol
+from app.models.models import Base
 
 app = FastAPI(title="Template API", version="1.0.0")
 app.include_router(api_router)
@@ -12,9 +9,8 @@ app.include_router(api_router)
 
 @app.on_event("startup")
 def on_startup():
-    # import models so SQLModel metadata is populated
     import app.models.models  # noqa: F401
-    SQLModel.metadata.create_all(engine)
+    Base.metadata.create_all(bind=engine)
 
 # if __name__ == "__main__":
 #     import app.models.models  # noqa: F401
