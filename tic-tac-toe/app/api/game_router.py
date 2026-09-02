@@ -22,10 +22,16 @@ class MoveCreate(BaseModel):
 def create_game(payload: GameCreate, session: Session = Depends(get_session)):
     try:
         service = GameService(session=session, winning_strategy=Standard3x3WinningStrategy())
-        service.create_player(payload.player_1, Symbol.X)
-        service.create_player(payload.player_2, Symbol.O)
+        player_1 = service.create_player(payload.player_1, Symbol.X)
+        player_2 = service.create_player(payload.player_2, Symbol.O)
         game = service.start_game()
-        return {"game_id": game.id, "start_player": payload.player_1, "status": game.status.value}
+        return {
+            "game_id": game.id,
+            "player_1_id": player_1.id,
+            "player_2_id": player_2.id,
+            "start_player": payload.player_1,
+            "status": game.status.value,
+        }
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -33,7 +39,8 @@ def create_game(payload: GameCreate, session: Session = Depends(get_session)):
 def make_move(game_id: int, payload: MoveCreate, session: Session = Depends(get_session)):
     try:
         service = GameService(session=session, winning_strategy=Standard3x3WinningStrategy())
-        move = service.play_turn(game_id, payload.player, payload.row, payload.col)
-        return {"move_id": move.id, "game_id": game_id, "winner": move.winner.name if move.winner else None}
+        game = service.play_turn(game_id, payload.player, payload.row, payload.col)
+        move = game.moves[-1]
+        return {"move_id": move.id, "game_id": game_id, "winner": game.winner.name if game.winner else None}
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

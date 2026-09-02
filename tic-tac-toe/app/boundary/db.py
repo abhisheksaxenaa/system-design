@@ -6,7 +6,11 @@ from dotenv import load_dotenv
 from sqlmodel import Session, create_engine
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-load_dotenv(BASE_DIR / ".env")
+load_dotenv(BASE_DIR / ".env", override=True)
+
+DATABASE_DIALECT = (
+    os.environ.get("DATABASE_DIALECT") or os.environ.get("DIALECT") or "sqlite"
+).lower()
 
 
 class DatabaseFactory:
@@ -62,6 +66,11 @@ class DatabaseFactory:
 
 
 engine = DatabaseFactory.get_engine()
+DATABASE_URL = (
+    DatabaseFactory._postgres_database_url()
+    if DATABASE_DIALECT.startswith("postgres")
+    else DatabaseFactory._sqlite_database_url()
+)
 
 
 def get_session():
