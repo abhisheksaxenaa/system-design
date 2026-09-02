@@ -2,19 +2,21 @@
 
 ### Functional Requirements:
 
-- Browse Shows: Users can view theaters, movies, and available shows.
+- Movie & Theater Management: Support multiple cinema halls, movies, screens, and scheduled showtimes.
 
-- Seat Selection & Locking: Users select seats for a show. Seats are locked temporarily (e.g., 10 minutes) during payment to prevent double booking.
+- Seat Inventory: Track individual seat types (VIP, Premium, Standard) and real-time availability states (Available, Locked, Booked).
 
-- Booking & Payment: Users can book locked seats and complete payment.
+- Dynamic Pricing (Strategy Pattern): Calculate ticket prices dynamically using pluggable strategies based on factors like showtime (matinee vs. evening), seat tier, and demand/popularity.
 
-- Concurrency Handling: Multiple users trying to book the same seat simultaneously must be handled safely (ACID compliance via database locks).
+- Booking & Seat Locking: Allow users to temporarily lock seats during checkout to prevent double-booking (concurrency safety), expiring after a timeout.
+
+- Database Operations: Fully persist entities and manage state transitions using SQLAlchemy ORM.
 
 ### Non-Functional Requirements:
 
-- **High Availability & Consistency**: Strong consistency for seat reservation (no double bookings).
+- **Extensibility**: Easily add new pricing rules without modifying core booking code (Open/Closed Principle).
 
-- **Extensibility**: Easy to add new payment methods or seat types.
+- **Data Integrity**: Ensure transactional isolation to handle race conditions on seat reservations.
 
 ### Future Requirements:
 
@@ -28,21 +30,17 @@
 
 ### Core Entities:
 
-**User**: Customer details.
+- Entities (SQLAlchemy Models): User, Movie, Theater, Screen, Seat, Showtime, Booking, ShowtimeSeat.
 
-**Theater & Screen**: Physical venue and individual screens.
+- Strategy Interface: PricingStrategy (defines calculate_price()).
 
-**Movie**: Movie metadata.
+- Concrete Strategies: StandardPricingStrategy, MatineeDiscountStrategy, PopularityDemandStrategy.
 
-**Show**: A movie screening at a specific screen, time, and date.
+- Core Services:
 
-**Seat**: Physical seats in a screen (e.g., VIP, Regular).
+    - PricingService: Context class that executes the active strategy.
 
-**ShowSeat**: The state of a specific seat for a given show (AVAILABLE, LOCKED, BOOKED).
-
-**Booking**: Reservation record linked to a user, show, and booked seats.
-
-**Payment**: Payment state (PENDING, SUCCESS, FAILED).
+    - BookingService: Handles seat locks, price calculation, and checkout persistence.
 
 ## 3. Design Patterns Used
 
