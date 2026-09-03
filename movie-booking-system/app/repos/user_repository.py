@@ -1,8 +1,6 @@
-from typing import List, Optional
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy import update
 from sqlmodel import Session, select
-from app.models.models import User
+
+from app.models.user import User
 
 
 class UserRepository:
@@ -10,7 +8,7 @@ class UserRepository:
         self.db = db
 
     def get_user_by_id(self, user_id):
-        return self.db.query(User).filter(User.id == user_id).first()
+        return self.db.exec(select(User).where(User.id == user_id)).first()
 
     def create_user(self, user_data):
         new_user = User(**user_data)

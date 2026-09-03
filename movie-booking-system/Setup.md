@@ -4,7 +4,7 @@ source .venv/bin/activate
 ```
 - install python packages
 ```bash
-pip install -r requirements.txt
+.venv/bin/python3 -m pip install -r requirements.txt
 ```
 
 - copy `.env.example` to `.env` and update the connection string for your environment

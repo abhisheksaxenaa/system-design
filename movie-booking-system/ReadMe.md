@@ -10,7 +10,7 @@
 
 - Booking & Seat Locking: Allow users to temporarily lock seats during checkout to prevent double-booking (concurrency safety), expiring after a timeout.
 
-- Database Operations: Fully persist entities and manage state transitions using SQLAlchemy ORM.
+- Database Operations: Fully persist entities and manage state transitions using SQLModel ORM.
 
 ### Non-Functional Requirements:
 
@@ -30,7 +30,7 @@
 
 ### Core Entities:
 
-- Entities (SQLAlchemy Models): User, Movie, Theater, Screen, Seat, Showtime, Booking, ShowtimeSeat.
+- Entities (SQLModel Models): User, Movie, Theater, Screen, Seat, Showtime, Booking, ShowtimeSeat.
 
 - Strategy Interface: PricingStrategy (defines calculate_price()).
 
@@ -48,4 +48,4 @@
 
 **State Pattern / Enum State Machine**: For managing ShowSeat status and BookingStatus.
 
-**Repository/Service Pattern**: To decouple SQLAlchemy database persistence from business logic.
+**Repository/Service Pattern**: To decouple SQLModel database persistence from business logic.
