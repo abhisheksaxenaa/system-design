@@ -17,6 +17,10 @@ Run Alembic: Look at alembic read my
 
 Then run the app
 
+```
+python3 -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
 ## Functional Requirements
 
 The system should support:
