@@ -8,8 +8,14 @@
 Start Postgres
 
 ```bash
-docker compose up -d postgres
+CREATE SCHEMA <schema_name>;
+
+GRANT ALL PRIVILEGES ON SCHEMA {schema_name} TO {user_name};
 ```
+
+Run Alembic: Look at alembic read my
+
+Then run the app
 
 ## Functional Requirements
 

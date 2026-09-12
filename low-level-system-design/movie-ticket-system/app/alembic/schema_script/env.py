@@ -72,8 +72,6 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        connection.execute(text("CREATE SCHEMA IF NOT EXISTS movie_booking"))
-        connection.execute(text("SET search_path TO movie_booking, public"))
 
         context.configure(
             connection=connection,
