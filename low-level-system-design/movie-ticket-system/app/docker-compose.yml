@@ -1,0 +1,23 @@
+# services:
+#   postgres:
+#     image: postgres:17
+#     environment:
+#       POSTGRES_DB: movie_booking
+#       POSTGRES_USER: movie_user
+#       POSTGRES_PASSWORD: movie_password
+#     ports:
+#       - "5432:5432"
+#     healthcheck:
+#       test:
+#         [
+#           "CMD-SHELL",
+#           "pg_isready -U movie_user -d movie_booking"
+#         ]
+#       interval: 5s
+#       timeout: 5s
+#       retries: 10
+#     volumes:
+#       - movie_booking_pgdata:/var/lib/postgresql/data
+
+# volumes:
+#   movie_booking_pgdata:

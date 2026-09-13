@@ -1,0 +1,14 @@
+alembic
+fastapi
+locust
+psycopg[binary]
+pydantic
+pydantic-settings
+sqlalchemy
+sqlmodel
+uvicorn
+
+# dev dependencies
+pytest
+pytest-cov
+httpx
